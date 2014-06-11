@@ -1,0 +1,39 @@
+{
+    "name": "git-connect",
+    "version": "0.0.1",
+    "description": "Javascript plugin for providing token-base Github OAuth via proxy with cookie storage",
+    "main": ["git-connect.js"],
+    "license": "MIT License",
+    "keywords": [
+        "git-connect",
+        "github",
+        "login",
+        "oauth",
+        "token",
+        "cookie",
+        "plugin",
+        "authentication",
+        "connection",
+        "git",
+        "proxy",
+        "cookie"
+    ],
+    "authors": [
+        "Konstantin Skipor"
+    ],
+    "homepage": "http://krispo.github.io/git-connect",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/krispo/git-connect.git"
+    },
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "src",
+        "test",
+        "tests",
+        "lib",
+        "examples"
+    ]
+}
