@@ -27,12 +27,12 @@
         if (code){
             get_request(connection.config['proxy'] + '/github_access_token?code=' + code + '&client_id=' + connection.config['client_id'], function(error, data){
                 if (error === null) {
-                    var token = data['access_token'];
-                    get_request('https://api.github.com/user?access_token=' + token, function(error, data){
+                    var access_token = data['access_token'];
+                    get_request('https://api.github.com/user?access_token=' + access_token, function(error, data){
                         if (error === null){
                             var login = data['login'];
                             connection.setCookie("login", login, 7 );
-                            connection.setCookie("access_token", token, 7 );
+                            connection.setCookie("access_token", access_token, 7 );
                         } else console.log(error);
                     })
                 } else console.log(error);
@@ -44,7 +44,7 @@
 
     // Check if user is connected to github
     connection.isConnected = function(){
-        return  connection.getCookie("token") !== "";
+        return  connection.getCookie("access_token") !== "";
     };
 
     // Connect to github
@@ -54,14 +54,14 @@
 
     // Disconnect from github
     connection.disconnect = function(){
-        connection.deleteCookies(["login", "token"]);
+        connection.deleteCookies(["login", "access_token"]);
     };
 
-    // Get credentials: login, token
+    // Get credentials: login, access_token
     connection.getCredentials = function(){
         return {
             login: connection.getCookie("login"),
-            token: connection.getCookie("token")
+            access_token: connection.getCookie("access_token")
         }
     };
 
