@@ -11,14 +11,21 @@
     /*
      * Connection definition, return connection
      * config = {
-     *      client_id: <client_id>, // github application
-     *      proxy: <proxy>          // git-proxy server
+     *      client_id: <client_id>,  // github application
+     *      proxy: <proxy>,          // git-proxy server
+     *      owner: <admin_username>, // admin username
+     *      reponame: <reponame>,    // application repository name
+     *      scope: <list of scopes>, // repo,gist,user,...
+     *      expires: <days>          // the number of days after coockies expire
      * }
      */
     window.connection = function(config){
         if (!arguments.length) return connection;
 
-        connection['config'] = config;
+        connection['config'] = { scope: 'repo', expires: 7 };
+        for (var key in config){
+            connection.config[key] = config[key];
+        };
 
         if (typeof window !== 'undefined' && typeof window.XMLHttpRequest !== 'undefined'){
             XMLHttpRequest = window.XMLHttpRequest;
@@ -26,15 +33,9 @@
         var code = connection.parseUrl('code');
         if (code){
             get_request(connection.config['proxy'] + '/github_access_token?code=' + code + '&client_id=' + connection.config['client_id'], function(error, data){
-                var access_token = data['access_token'];
                 if (error === null) {
-                    get_request('https://api.github.com/user?access_token=' + access_token, function(error, data){
-                        if (error === null){
-                            connection.setCookie('login', data['login'], 7 );
-                            connection.setCookie('access_token', access_token, 7 );
-                            window.location.href = window.location.href.replace(/[\\?&]code=[^&#]*/, '');
-                        } else console.log(error);
-                    })
+                    connection.setCookie('github_access_token', data['access_token'], connection.config['expires']);
+                    window.location.href = window.location.href.replace(/[\\?&]code=[^&#]*/, '');
                 } else console.log(error);
             })
         };
@@ -44,17 +45,17 @@
 
     // Check if user is connected to github
     connection.isConnected = function(){
-        return  connection.getCookie('access_token') !== '';
+        return  connection.getCookie('github_access_token') !== '';
     };
 
     // Connect to github
     connection.connect = function(){
-        window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + connection.config['client_id'];
+        window.location.href = 'https://github.com/login/oauth/authorize?client_id=' + connection.config['client_id']+'&scope=' + connection.config['scope'];
     };
 
     // Disconnect from github
     connection.disconnect = function(){
-        connection.deleteCookies(['login', 'access_token']);
+        connection.deleteCookies(['github_access_token']);
         window.location.reload();
     };
 
@@ -63,12 +64,16 @@
         connection.isConnected() ? connection.disconnect() : connection.connect();
     };
 
-    // Get credentials: login, access_token
-    connection.getCredentials = function(){
-        return {
-            login: connection.getCookie('login'),
-            access_token: connection.getCookie('access_token')
-        }
+    // Get credentials: username, access_token
+    connection.withCredentials = function(callback){
+        var access_token = connection.getCookie('github_access_token');
+        if (access_token){
+            get_request('https://api.github.com/user?access_token=' + access_token, function(error, data){
+                if (error === null){
+                    return callback(null, data['login'], access_token)
+                } else callback(error)
+            });
+        } return callback('User is not authorized...')
     };
 
     // Get 'param' from url
