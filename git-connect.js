@@ -16,13 +16,13 @@
      *      owner: <admin_username>, // admin username
      *      reponame: <reponame>,    // application repository name
      *      scope: <list of scopes>, // repo,gist,user,...
-     *      expires: <days>          // the number of days after coockies expire
+     *      expires: <days>          // the number of days after cookies expire
      * }
      */
     window.connection = function(config){
         if (!arguments.length) return connection;
 
-        connection['config'] = { scope: 'repo', expires: 7 };
+        connection['config'] = { scope: 'public_repo', expires: 7 };
         for (var key in config){
             connection.config[key] = config[key];
         };
@@ -39,6 +39,10 @@
                 } else console.log(error);
             })
         };
+
+        connection.isConnected()
+            ? document.dispatchEvent(new CustomEvent('IsConnectedWithGithubEvent', { 'detail': connection }))
+            : document.dispatchEvent(new CustomEvent('IsDisconnectedWithGithubEvent', { 'detail': connection }));
 
         return connection;
     };
@@ -69,11 +73,9 @@
         var access_token = connection.getCookie('github_access_token');
         if (access_token){
             get_request('https://api.github.com/user?access_token=' + access_token, function(error, data){
-                if (error === null){
-                    return callback(null, data['login'], access_token)
-                } else callback(error)
+                return (error === null) ? callback(null, data['login'], access_token, data) : callback(error);
             });
-        } return callback('User is not authorized...')
+        } else return callback('User is not authorized...')
     };
 
     // Get 'param' from url
