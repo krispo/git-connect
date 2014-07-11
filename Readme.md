@@ -73,3 +73,9 @@ document.addEventListener('IsConnectedToGithubEvent', function(event){
     var _connection = event.detail; // get connection instance from event
 });
 ```
+
+---
+
+See [demo](http://krispo.github.io/git-connect/).
+
+[MIT License](https://github.com/krispo/git-connect/blob/master/LICENSE)
