@@ -62,4 +62,14 @@ Base api for `connection`:
 * `getCookie(name) : string` - Get cookie value;
 * `deleteCookie([name1,...]) : unit` - Delete cookies by names.
 
+Global events:
+* `IsConnectedToGithubEvent` - arises after user connects to Github;
+* `IsDisconnectedFromGithubEvent` - arises after user disconnects from Github
 
+You can subscribe to any event like:
+```javascript
+document.addEventListener('IsConnectedToGithubEvent', function(event){
+    /* do smth after user is connected to github */
+    var _connection = event.detail; // get connection instance from event
+});
+```

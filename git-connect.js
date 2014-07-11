@@ -41,8 +41,8 @@
         };
 
         connection.isConnected()
-            ? document.dispatchEvent(new CustomEvent('IsConnectedWithGithubEvent', { 'detail': connection }))
-            : document.dispatchEvent(new CustomEvent('IsDisconnectedWithGithubEvent', { 'detail': connection }));
+            ? document.dispatchEvent(new CustomEvent('IsConnectedToGithubEvent', { 'detail': connection }))
+            : document.dispatchEvent(new CustomEvent('IsDisconnectedFromGithubEvent', { 'detail': connection }));
 
         return connection;
     };
